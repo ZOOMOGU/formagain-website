@@ -3,11 +3,65 @@
 import { CSSProperties, ReactNode, useEffect, useRef, useState } from "react";
 
 type Step = "welcome" | "choose" | "blooming" | "thanks" | "quiet";
-const wishes = [
-  { name: "a little care", note: "For the things we sometimes overlook.", color: "#f4e7b3" },
-  { name: "room to grow", note: "For beginnings, however small.", color: "#d6e8c8" },
-  { name: "a moment of wonder", note: "For the beauty waiting to be noticed.", color: "#e4d5ec" },
+const wordRows = [
+  ["showing up", "belief", "mind · body · spirit", "progress", "consistency", "intention"],
+  ["a little care", "your journey, your pace", "trying is cool", "trust the process", "move to feel alive"],
+  ["room to grow", "mental strength", "metamorphosis", "endurance", "clarity through movement", "a moment of wonder"],
 ];
+const colors = ["#f4e7b3", "#d6e8c8", "#e4d5ec"];
+
+function IntentionField({ selected, onToggle, paused, onPause }: { selected: string[]; onToggle: (word: string) => void; paused: boolean; onPause: () => void }) {
+  const rows = useRef<(HTMLDivElement | null)[]>([]);
+  const hovering = useRef(-1);
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let frame = 0;
+    let last = 0;
+    const directions = [1, -1, 1];
+    if (!initialized.current) {
+      rows.current.forEach((row, i) => { if (row) row.scrollLeft = (row.scrollWidth - row.clientWidth) * (i === 1 ? .5 : .16); });
+      initialized.current = true;
+    }
+    const positions = rows.current.map(row => row?.scrollLeft ?? 0);
+    function tick(now: number) {
+      const elapsed = last ? Math.min(now - last, 40) : 0;
+      last = now;
+      if (!paused && !media.matches && !document.hidden) rows.current.forEach((row, i) => {
+        if (!row) return;
+        if (hovering.current === i || row.contains(document.activeElement)) { positions[i] = row.scrollLeft; return; }
+        const max = row.scrollWidth - row.clientWidth;
+        if (max <= 0) return;
+        const next = positions[i] + directions[i] * elapsed * .013;
+        positions[i] = Math.max(0, Math.min(max, next));
+        row.scrollLeft = positions[i];
+        if (next >= max || next <= 0) directions[i] *= -1;
+      });
+      frame = requestAnimationFrame(tick);
+    }
+    if (!paused && !media.matches) frame = requestAnimationFrame(tick);
+    const preferenceChange = () => { cancelAnimationFrame(frame); last = 0; if (!paused && !media.matches) frame = requestAnimationFrame(tick); };
+    media.addEventListener("change", preferenceChange);
+    const listeners = rows.current.map(row => {
+      if (!row) return null;
+      const wheel = (event: WheelEvent) => {
+        if (event.ctrlKey || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
+        if (row.scrollWidth <= row.clientWidth) return;
+        event.preventDefault(); row.scrollLeft += event.deltaY;
+      };
+      row.addEventListener("wheel", wheel, { passive: false });
+      return () => row.removeEventListener("wheel", wheel);
+    });
+    return () => { cancelAnimationFrame(frame); media.removeEventListener("change", preferenceChange); listeners.forEach(remove => remove?.()); };
+  }, [paused]);
+
+  return <div className="intention-field" aria-label="Choose three intentions">
+    {wordRows.map((words, row) => <div key={row} className={`intention-row intention-row-${row}`} ref={element => { rows.current[row] = element; }} onMouseEnter={() => { hovering.current = row; }} onMouseLeave={() => { hovering.current = -1; }} onTouchStart={onPause} role="group" aria-label={`Intentions, row ${row + 1}`}>
+      <div className="intention-track">{words.map(word => <button key={word} className={`intention-pill ${selected.includes(word) ? "is-selected" : ""}`} aria-pressed={selected.includes(word)} aria-disabled={selected.length === 3 && !selected.includes(word)} onClick={() => onToggle(word)}>{word}</button>)}</div>
+    </div>)}
+  </div>;
+}
 
 function Bloom({ variant }: { variant: number }) {
   return <svg className={`wish-flower flower-kind-${variant}`} viewBox="0 0 220 260" fill="none" aria-hidden="true">
@@ -24,12 +78,11 @@ function Bloom({ variant }: { variant: number }) {
 
 export default function WarmJourney({ children }: { children: ReactNode }) {
   const [step, setStep] = useState<Step>("welcome");
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState<string[]>([]);
+  const [paused, setPaused] = useState(false);
+  const [selectionMessage, setSelectionMessage] = useState("");
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const wheelRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
-  const touchY = useRef<number | null>(null);
-  const wish = wishes[selected];
   const grown = step === "blooming" || step === "thanks" || step === "quiet";
 
   useEffect(() => {
@@ -44,33 +97,18 @@ export default function WarmJourney({ children }: { children: ReactNode }) {
     return () => window.clearTimeout(timer);
   }, [step]);
 
-  useEffect(() => {
-    if (step !== "choose") return;
-    const wheel = wheelRef.current;
-    if (!wheel) return;
-    let accumulated = 0;
-    let lastChange = 0;
-    function scroll(event: WheelEvent) {
-      if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-      event.preventDefault();
-      if (Date.now() - lastChange < 360) return;
-      accumulated += event.deltaY;
-      if (Math.abs(accumulated) < 24) return;
-      const direction = accumulated > 0 ? 1 : 2;
-      setSelected(previous => (previous + direction) % 3);
-      accumulated = 0;
-      lastChange = Date.now();
-    }
-    wheel.addEventListener("wheel", scroll, { passive: false });
-    return () => wheel.removeEventListener("wheel", scroll);
-  }, [step]);
+  function toggleWord(word: string) {
+    setSelectionMessage("");
+    if (selected.includes(word)) setSelected(selected.filter(value => value !== word));
+    else if (selected.length < 3) setSelected([...selected, word]);
+    else setSelectionMessage("Three is a lovely beginning. Remove one to choose another.");
+  }
+  function reset() { setSelected([]); setPaused(false); setSelectionMessage(""); setStep("choose"); }
 
-  function reset() { setStep("choose"); }
-
-  return <div className={`warm-journey journey-${step}`} style={{ "--wish-color": wish.color } as CSSProperties}>
+  return <div className={`warm-journey journey-${step}`} style={{ "--wish-color": colors[0] } as CSSProperties}>
     <div className={`wish-world ${grown ? "has-grown" : ""}`} aria-hidden="true">
       <div className="wish-light" />
-      {grown && <><div className="grown-flower"><Bloom variant={selected} /></div><div className="wish-sparks">{Array.from({ length: 14 }, (_, i) => <i key={i} style={{ "--spark-x": `${Math.sin(i * 2.4) * (60 + i * 5)}px`, "--spark-y": `${-40 - i * 14}px`, "--spark-delay": `${i * 65}ms` } as CSSProperties} />)}</div></>}
+      {grown && <><div className="grown-flower wish-bouquet">{selected.map((word, i) => <div key={word} className={`bouquet-stem bouquet-stem-${i}`} style={{ color: colors[i] }}><Bloom variant={i} /></div>)}</div><div className="wish-sparks">{Array.from({ length: 14 }, (_, i) => <i key={i} style={{ "--spark-x": `${Math.sin(i * 2.4) * (60 + i * 5)}px`, "--spark-y": `${-40 - i * 14}px`, "--spark-delay": `${i * 65}ms` } as CSSProperties} />)}</div></>}
     </div>
 
     {step === "welcome" && <section className="journey-panel welcome-panel" aria-label="An invitation from formagain">
@@ -81,32 +119,25 @@ export default function WarmJourney({ children }: { children: ReactNode }) {
       <p className="journey-whisper">A small moment, just for you.</p>
     </section>}
 
-    {step === "choose" && <section className="journey-panel choose-panel" aria-label="Plant a little beauty">
-      <p className="journey-kicker">EVERY BEAUTIFUL THING STARTS SOMEWHERE.</p>
-      <h1 ref={headingRef} tabIndex={-1}>What would you like to grow?</h1>
-      <div className="wish-selector" ref={wheelRef} onKeyDown={event => {
-        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-          event.preventDefault(); setSelected(previous => (previous + (event.key === "ArrowDown" ? 1 : 2)) % 3);
-        }
-      }} onTouchStart={event => { touchY.current = event.touches[0].clientY; }} onTouchEnd={event => {
-        if (touchY.current === null) return;
-        const delta = touchY.current - event.changedTouches[0].clientY;
-        if (Math.abs(delta) > 24) setSelected(previous => (previous + (delta > 0 ? 1 : 2)) % 3);
-        touchY.current = null;
-      }} role="group" aria-label="Choose what to grow. Scroll, swipe or use arrow keys.">
-        <div className="selection-window" aria-hidden="true"><span>✧</span><span>✧</span></div>
-        {wishes.map((item, i) => {
-          const position = (i - selected + 4) % 3 - 1;
-          return <button key={item.name} type="button" className={`wish-option ${selected === i ? "selected" : ""}`} style={{ "--option-position": position } as CSSProperties} aria-pressed={selected === i} onClick={() => setSelected(i)}>{item.name}</button>;
-        })}
+    {step === "choose" && <section className="journey-panel choose-panel intention-panel" aria-label="Plant a little beauty">
+      <div className="intention-heading">
+        <p className="journey-kicker">A SMALL ACT OF BECOMING</p>
+        <h1 ref={headingRef} tabIndex={-1}>What will you bring<br />into the world?</h1>
+        <p className="intention-subtitle">Choose three words. Let something beautiful grow.</p>
       </div>
-      <p className="wish-description" aria-live="polite">{wish.note}</p>
-      <p className="selector-hint">SCROLL, SWIPE OR TAP TO CHOOSE</p>
-      <button className="plant-button" onClick={() => setStep("blooming")} aria-label={`Plant ${wish.name}`}><span className="seed-orbit" aria-hidden="true"><i /></span><span>Plant {wish.name}</span><span className="plant-arrow" aria-hidden="true">↓</span></button>
-      <button className="journey-text" onClick={() => setStep("welcome")}>Back to the meadow</button>
+      <IntentionField selected={selected} onToggle={toggleWord} paused={paused} onPause={() => setPaused(true)} />
+      <div className="intention-summary">
+        <div className="selected-intentions" aria-label="Your chosen intentions">
+          {selected.length === 0 ? <span className="selection-placeholder">A little of you, a little more beauty.</span> : selected.map(word => <button key={word} onClick={() => toggleWord(word)} aria-label={`Remove ${word}`} title="Click to remove">{word}</button>)}
+        </div>
+        <p className="intention-count" role="status">{selected.length} / 3 intentions chosen</p>
+        <p className="selection-message" role="status">{selectionMessage}</p>
+        <div className="intention-controls"><button className="pause-words" aria-pressed={paused} onClick={() => setPaused(!paused)}>{paused ? "Let the words drift" : "Pause the words"}<span aria-hidden="true">{paused ? "▷" : "Ⅱ"}</span></button><button className="grow-intentions" disabled={selected.length !== 3} onClick={() => setStep("blooming")}>Let it grow <span aria-hidden="true">↗</span></button></div>
+        <button className="journey-text" onClick={() => setStep("welcome")}>Back to the meadow</button>
+      </div>
     </section>}
 
-    {step === "blooming" && <section className="journey-panel blooming-panel" aria-live="polite"><p className="journey-kicker">A LITTLE {selected === 0 ? "CARE" : selected === 1 ? "SPACE" : "WONDER"} GOES A LONG WAY.</p><h1 ref={headingRef} tabIndex={-1}>Look what you’ve started.</h1></section>}
+    {step === "blooming" && <section className="journey-panel blooming-panel" aria-live="polite"><p className="journey-kicker">SMALL INTENTIONS. BEAUTIFUL BEGINNINGS.</p><h1 ref={headingRef} tabIndex={-1}>Look what you’ve started.</h1></section>}
 
     {(step === "thanks" || step === "quiet") && <section className="journey-panel thanks-panel">
       <p className="journey-kicker">YOU LEFT SOMETHING BEAUTIFUL HERE.</p>

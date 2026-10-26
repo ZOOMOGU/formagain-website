@@ -93,3 +93,43 @@
 }
 @media(max-height:700px) and (min-width:761px){.warm-journey{min-height:calc(100svh - 65px)}.site-footer{height:65px}.journey-panel{padding-bottom:25px;padding-top:100px}.journey-panel h1{font-size:36px}.journey-kicker{margin-bottom:13px}.journey-copy{margin-top:15px}.choose-panel{padding-top:110px}.choose-panel h1{font-size:29px}.choose-panel .journey-kicker{display:none}.wish-selector{height:150px;margin-top:8px}.selection-window,.wish-option{top:47px}.wish-option{transform:translateY(calc(var(--option-position) * 47px)) scale(.8)}.wish-option.selected{transform:translateY(0)}.selector-hint{margin-top:7px}.plant-button{margin-top:15px;margin-bottom:3px}.thanks-panel{padding-top:210px}.thanks-panel h1{font-size:28px}.gentle-invitation{margin-top:18px}.grown-flower{bottom:330px;width:125px;height:150px}.journey-blooming .grown-flower{bottom:150px}.journey-blooming .journey-panel{padding-bottom:50px}.journey-quiet .grown-flower{bottom:250px}}
 @media(prefers-reduced-motion:reduce){.journey-panel,.gentle-invitation{opacity:1;transform:none}.wish-sparks{display:none}.wish-stem{stroke-dashoffset:0}.wish-head,.wish-leaf{opacity:1;transform:none}.wish-light{transition:none}.wish-option{transition:none}}
+
+/* Three gentle currents of glass intentions, inspired by the supplied reference. */
+.intention-panel{max-width:none;padding:125px 0 20px;align-self:center}
+.intention-panel::before{inset:15% 0 -25px;background:radial-gradient(ellipse,#0614148a,transparent 75%)}
+.intention-heading{padding:0 24px}
+.intention-panel .journey-kicker{display:block;font-size:8px;letter-spacing:3.3px;margin-bottom:23px}
+.intention-panel h1{font:400 clamp(36px,4.4vw,65px)/1.08 Arial,sans-serif;letter-spacing:-2.6px;text-shadow:0 2px 25px #06151180}
+.intention-subtitle{margin-top:24px;font-size:12px;color:#edf0e1b5;letter-spacing:.1px;line-height:1.6}
+.intention-field{width:100%;margin:44px auto 0;display:flex;flex-direction:column;gap:15px;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.intention-row{width:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;scroll-behavior:auto;padding:5px 0;touch-action:pan-x pan-y}
+.intention-row::-webkit-scrollbar{display:none}
+.intention-track{display:flex;align-items:center;gap:20px;width:max-content;min-width:100%;padding:0 12vw;justify-content:center}
+.intention-row-1 .intention-track{padding-left:17vw;padding-right:17vw}
+.intention-pill{position:relative;flex-shrink:0;padding:16px 31px 18px;border:1px solid #e1ebdb33;border-radius:100px;background:#0b1a1f1f;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);font:400 clamp(22px,2.2vw,34px)/1.1 Georgia,serif;letter-spacing:-.7px;color:#f0f2e4d4;white-space:nowrap;box-shadow:inset 0 1px 0 #ffffff08;transition:color .3s,background .3s,border-color .3s,box-shadow .3s}
+.intention-pill:hover{border-color:#e4ebbf85;background:#e1ebce13;color:#fffef0}
+.intention-pill.is-selected{border-color:#e8edb9a8;background:#dce7aa2c;color:#fff6cb;box-shadow:inset 0 0 24px #e4eeb50b,0 0 25px #e4e6a710;text-shadow:0 0 16px #ffffd633}
+.intention-pill[aria-disabled=true]{cursor:default}
+.intention-summary{padding:0 24px;margin:35px auto 0;max-width:850px}
+.selected-intentions{min-height:34px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 19px;color:#f7f0c7;font:italic 20px/1.4 Georgia,serif}
+.selected-intentions button{font:inherit;padding:3px 0;position:relative}
+.selected-intentions button:hover{text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:#f9f6d480}
+.selection-placeholder{font-size:17px;color:#e3e9d88c}
+.intention-count{font:9px/1.6 Consolas,monospace;letter-spacing:2px;color:#d7e3c7a8;margin-top:12px}
+.selection-message{font-size:10px;color:#f7edc8;line-height:1.5;min-height:15px;margin-top:4px}
+.intention-controls{display:flex;align-items:center;justify-content:center;gap:27px;margin-top:10px}
+.pause-words{display:flex;align-items:center;gap:15px;font-size:10px;letter-spacing:.4px;color:#e0e8d3a8;padding:12px 0}
+.pause-words:hover{color:#f6f8e6}
+.pause-words span{font-size:14px}
+.grow-intentions{border:1px solid #e4ecc765;border-radius:100px;padding:12px 22px;background:#d6e8bd13;backdrop-filter:blur(12px);font-size:11px;letter-spacing:.4px;display:flex;gap:20px;align-items:center}
+.grow-intentions:hover:not(:disabled){background:#deedb92a}
+.grow-intentions:disabled{cursor:default;opacity:.3}
+.intention-summary>.journey-text{margin-top:9px;font-size:9px;color:#d7e1cb85}
+.wish-bouquet{width:250px}
+.bouquet-stem{position:absolute;inset:0}
+.bouquet-stem-0{transform:translateX(-42px) translateY(22px) rotate(-18deg) scale(.83)}
+.bouquet-stem-1{transform:translateY(-9px)}
+.bouquet-stem-2{transform:translateX(42px) translateY(27px) rotate(20deg) scale(.8)}
+@media(min-width:1800px){.intention-track{gap:26px;padding:0 16vw}.intention-pill{font-size:36px;padding:19px 38px 21px}.intention-field{gap:18px;margin-top:50px}.intention-summary{margin-top:45px}}
+@media(max-width:760px){.intention-panel{padding:110px 0 16px}.intention-panel .journey-kicker{font-size:7px;letter-spacing:2.3px;margin-bottom:20px}.intention-panel h1{font-size:38px;letter-spacing:-1.7px}.intention-subtitle{font-size:10px;margin:18px auto 0;max-width:260px}.intention-field{margin-top:30px;gap:11px;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}.intention-track,.intention-row-1 .intention-track{padding:0 24px;gap:12px}.intention-pill{font-size:23px;padding:13px 23px 15px}.intention-summary{margin-top:24px;padding:0 23px}.selected-intentions{font-size:17px;gap:4px 14px;min-height:48px}.selection-placeholder{font-size:15px}.intention-count{font-size:8px;letter-spacing:1.5px;margin-top:10px}.intention-controls{gap:22px;margin-top:8px}.intention-summary>.journey-text{margin-top:9px}.wish-bouquet{width:200px}}
+@media(max-height:700px) and (min-width:761px){.intention-panel{padding-top:95px;padding-bottom:8px}.intention-panel .journey-kicker{margin-bottom:12px;font-size:7px}.intention-panel h1{font-size:40px}.intention-subtitle{margin-top:13px;font-size:11px}.intention-field{margin-top:21px;gap:8px}.intention-pill{font-size:24px;padding:12px 26px 14px}.intention-summary{margin-top:15px}.selected-intentions{font-size:17px;min-height:25px}.intention-count{margin-top:6px}.selection-message{margin-top:0}.intention-controls{margin-top:0}.intention-summary>.journey-text{margin-top:0}.wish-bouquet{width:180px}}
