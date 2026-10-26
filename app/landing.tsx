@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 
 import ParticleCursor from "./particle-cursor";
+import LivingMeadow from "./living-meadow";
 
 type Dialog = "privacy" | null;
 type SubscriptionResponse = { subscribed?: boolean; error?: string; canUnsubscribe?: boolean };
@@ -34,16 +35,21 @@ export default function Landing() {
   async function subscribe(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (phase === "loading") return;
+    const emailInput = event.currentTarget.elements.namedItem("email") as HTMLInputElement;
+    if (!email.trim() || !emailInput.validity.valid) {
+      setPhase("error"); setMessage("Please enter a valid email address.");
+      emailInput.focus(); return;
+    }
     const form = new FormData(event.currentTarget);
     setPhase("loading"); setMessage("");
     try {
       const response = await fetch("/api/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim(), consent: true, website: form.get("website") || "" }) });
       const result = await response.json() as SubscriptionResponse;
-      if (!response.ok) throw new Error(result.error || "暂时无法订阅，请稍后重试。");
+      if (!response.ok) throw new Error(result.error || "Unable to subscribe. Please try again.");
       setPhase("success"); setCanUnsubscribe(Boolean(result.canUnsubscribe));
       setEmail("");
     } catch (error) {
-      setPhase("error"); setMessage(error instanceof Error ? error.message : "网络连接异常，请稍后重试。");
+      setPhase("error"); setMessage(error instanceof Error ? error.message : "Connection interrupted. Please try again.");
     }
   }
 
@@ -51,31 +57,31 @@ export default function Landing() {
     setPhase("loading"); setMessage("");
     try {
       const response = await fetch("/api/unsubscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
-      if (!response.ok) throw new Error("暂时无法取消，请稍后重试。");
-      setCanUnsubscribe(false); setPhase("idle"); setMessage("已取消订阅，你的邮箱已从名单中移除。");
+      if (!response.ok) throw new Error("Unable to unsubscribe. Please try again.");
+      setCanUnsubscribe(false); setPhase("idle"); setMessage("Unsubscribed. Your email has been removed.");
     } catch (error) {
-      setPhase("success"); setMessage(error instanceof Error ? error.message : "请稍后重试。");
+      setPhase("success"); setMessage(error instanceof Error ? error.message : "Please try again.");
     }
   }
 
   return (
     <div className="landing-shell" id="top">
       <img className="background-photo" src="/images/meadow.jpg" alt="" width="735" height="492" fetchPriority="high" />
+      <LivingMeadow />
       <div className="photo-shade" aria-hidden="true" />
       <ParticleCursor />
-      <a className="skip-link" href="#main">跳至订阅</a>
-      <header className="site-header"><span className="launch-status"><i /> COMING SOON</span></header>
+      <a className="skip-link" href="#main">Skip to subscription</a>
+      <header className="site-header"><a className="brand-home" href="#top" aria-label="formagain home"><img className="brand-logo" src="/brand/formagain.svg" alt="formagain" width="490" height="97" /></a><span className="launch-status"><i /> COMING SOON</span></header>
       <main id="main" className="main-content">
-        <h1><img className="brand-logo" src="/brand/formagain.svg" alt="formagain" width="490" height="97" /></h1>
-        <p className="tagline">新生，自然而然。</p>
-        <section className="newsletter" id="subscribe" aria-label="邮箱订阅">
-          {phase === "success" || (phase === "loading" && canUnsubscribe) ? <div className="subscription-success" role="status"><span aria-hidden="true">✓</span><p>已订阅。下个开始，见。</p></div> : <form onSubmit={subscribe} className="subscribe-form"><label className="sr-only" htmlFor="email">你的邮箱地址</label><div className="email-row"><input id="email" name="email" type="email" autoComplete="email" placeholder="留下邮箱，静候新生" required maxLength={254} value={email} onChange={e => setEmail(e.target.value)} aria-describedby="subscribe-note subscribe-message" aria-invalid={phase === "error"} disabled={phase === "loading"} /><button type="submit" disabled={phase === "loading"}><span>{phase === "loading" ? "加入中…" : "订阅"}</span><Arrow /></button></div><div className="honeypot" aria-hidden="true"><label>Website<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label></div></form>}
+        <h1 className="tagline">A new beginning, naturally.</h1>
+        <section className="newsletter" id="subscribe" aria-label="Email subscription">
+          {phase === "success" || (phase === "loading" && canUnsubscribe) ? <div className="subscription-success" role="status"><span aria-hidden="true">✓</span><p>You’re on the list. See you soon.</p></div> : <form noValidate onSubmit={subscribe} className="subscribe-form"><label className="sr-only" htmlFor="email">Your email address</label><div className="email-row"><input id="email" name="email" type="email" autoComplete="email" placeholder="Your email address" required maxLength={254} value={email} onChange={e => setEmail(e.target.value)} aria-describedby="subscribe-note subscribe-message" aria-invalid={phase === "error"} disabled={phase === "loading"} /><button type="submit" disabled={phase === "loading"}><span>{phase === "loading" ? "Joining…" : "Subscribe"}</span><Arrow /></button></div><div className="honeypot" aria-hidden="true"><label>Website<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label></div></form>}
           <p id="subscribe-message" className={`form-message ${phase === "error" ? "error" : ""}`} role={phase === "error" ? "alert" : "status"}>{message}</p>
-          <p className="subscribe-note" id="subscribe-note">{canUnsubscribe ? <button disabled={phase === "loading"} onClick={unsubscribe}>{phase === "loading" ? "处理中…" : "取消订阅"}</button> : "订阅品牌来信，随时退订。"}</p>
+          <p className="subscribe-note" id="subscribe-note">{canUnsubscribe ? <button disabled={phase === "loading"} onClick={unsubscribe}>{phase === "loading" ? "Working…" : "Unsubscribe"}</button> : "Brand letters. Unsubscribe anytime."}</p>
         </section>
       </main>
-      <footer className="site-footer"><span>© 2026 FORMAGAIN</span><button onClick={() => setDialog("privacy")}>隐私说明</button></footer>
-      <dialog ref={dialogRef} className="brand-dialog" onCancel={() => setDialog(null)} onClick={e => { if (e.target === dialogRef.current) setDialog(null); }}><button className="dialog-close" aria-label="关闭弹窗" onClick={() => setDialog(null)}>×</button><div className="privacy-dialog"><span className="eyebrow">YOUR EMAIL, RESPECTED.</span><h2>隐私说明</h2><p>订阅时，我们会保存你的邮箱地址、订阅时间和同意记录，用于 formagain 的品牌与系列消息。邮箱不会显示在公开页面中。</p><p>我们会用必要的浏览器 Cookie 识别你在本设备上完成的订阅。通过此设备上的「取消本次订阅」可以删除对应的邮箱记录。清除 Cookie 或更换设备后，该入口可能无法识别原订阅。</p><p>目前页面收集订阅意向，不会立即发送邮件。系列的正式信息以未来发布为准。</p><button className="dialog-confirm" onClick={() => setDialog(null)}>知道了 <Arrow /></button></div></dialog>
+      <footer className="site-footer"><span>© 2026 FORMAGAIN</span><div className="footer-links"><button className="instagram-link" type="button" disabled title="Instagram link coming soon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5" stroke="currentColor" strokeWidth="1.4"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" strokeWidth="1.4"/><circle cx="17" cy="7" r="1" fill="currentColor"/></svg><span>Instagram</span><Arrow diagonal /></button><button onClick={() => setDialog("privacy")}>Privacy</button></div></footer>
+      <dialog ref={dialogRef} className="brand-dialog" onCancel={() => setDialog(null)} onClick={e => { if (e.target === dialogRef.current) setDialog(null); }}><button className="dialog-close" aria-label="Close dialog" onClick={() => setDialog(null)}>×</button><div className="privacy-dialog"><span className="eyebrow">YOUR EMAIL, RESPECTED.</span><h2>Privacy</h2><p>We store your email address, subscription date and consent record to share formagain news and collection updates. Your email is never displayed publicly.</p><p>An essential cookie identifies your subscription on this device. Select “Unsubscribe” here to delete your email record. This option may no longer recognize your subscription if you clear cookies or switch devices.</p><p>We are currently collecting sign-ups. Subscribing does not send an immediate email. Collection details will be announced at launch.</p><button className="dialog-confirm" onClick={() => setDialog(null)}>Got it <Arrow /></button></div></dialog>
     </div>
   );
 }
