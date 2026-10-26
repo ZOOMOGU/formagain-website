@@ -68,6 +68,7 @@ export default function Landing() {
     <div className="landing-shell" id="top">
       <LivingMeadow />
       <div className="photo-shade" aria-hidden="true" />
+      <div className="film-finish" aria-hidden="true" />
       <ParticleCursor />
       <a className="skip-link" href="#main">Skip to subscription</a>
       <header className="site-header"><a className="brand-home" href="#top" aria-label="formagain home"><img className="brand-logo" src="/brand/formagain.svg" alt="formagain" width="490" height="97" /></a><span className="launch-status"><i /> COMING SOON</span></header>
