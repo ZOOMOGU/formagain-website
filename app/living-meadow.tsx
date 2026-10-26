@@ -80,7 +80,7 @@ export default function LivingMeadow() {
   }, []);
 
   return <div className="meadow-layers" ref={rootRef} aria-hidden="true">
-    <img className="still-background" src="/images/meadow-clean-plate.png" alt="" width="1532" height="1027" fetchPriority="high" />
+    <img className="still-background" src="/images/meadow-track-dusk.png" alt="" width="1532" height="1027" fetchPriority="high" />
     <div className="flower-stage">
       {plants.map(p => <div key={p.name} className={`flower-position ${p.name}`}><div className="flower-sprite" style={{backgroundPosition: `${p.variant * 50}% center`, transformOrigin: `${p.anchor}% 97%`}}><span className="flower-particle-origin" style={{left: `${p.head * 100}%`, top: `${p.headY * 100}%`}} /></div></div>)}
     </div>
