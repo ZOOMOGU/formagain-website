@@ -3,12 +3,12 @@
 import { useEffect, useRef } from "react";
 
 const plants = [
-  { name: "near-left", variant: 0, anchor: 78, head: .35 },
-  { name: "mid-left", variant: 2, anchor: 32, head: .68 },
-  { name: "far-left", variant: 1, anchor: 50, head: .5 },
-  { name: "far-right", variant: 0, anchor: 78, head: .35 },
-  { name: "near-right", variant: 1, anchor: 50, head: .5 },
-  { name: "edge-right", variant: 2, anchor: 32, head: .68 },
+  { name: "near-left", variant: 0, anchor: 78, head: .35, headY: .18 },
+  { name: "mid-left", variant: 2, anchor: 32, head: .68, headY: .17 },
+  { name: "far-left", variant: 1, anchor: 50, head: .5, headY: .11 },
+  { name: "far-right", variant: 0, anchor: 78, head: .35, headY: .18 },
+  { name: "near-right", variant: 1, anchor: 50, head: .5, headY: .11 },
+  { name: "edge-right", variant: 2, anchor: 32, head: .68, headY: .17 },
 ];
 
 export default function LivingMeadow() {
@@ -82,7 +82,7 @@ export default function LivingMeadow() {
   return <div className="meadow-layers" ref={rootRef} aria-hidden="true">
     <img className="still-background" src="/images/meadow-clean-plate.png" alt="" width="1532" height="1027" fetchPriority="high" />
     <div className="flower-stage">
-      {plants.map(p => <div key={p.name} className={`flower-position ${p.name}`}><div className="flower-sprite" style={{backgroundPosition: `${p.variant * 50}% center`, transformOrigin: `${p.anchor}% 97%`}} /></div>)}
+      {plants.map(p => <div key={p.name} className={`flower-position ${p.name}`}><div className="flower-sprite" style={{backgroundPosition: `${p.variant * 50}% center`, transformOrigin: `${p.anchor}% 97%`}}><span className="flower-particle-origin" style={{left: `${p.head * 100}%`, top: `${p.headY * 100}%`}} /></div></div>)}
     </div>
   </div>;
 }

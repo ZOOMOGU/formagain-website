@@ -17,3 +17,5 @@
 .near-left{--defocus:3.2px;--flash:2.05}.mid-left{--defocus:1.5px;--flash:1.5}.far-left,.far-right{--defocus:1px;--flash:1.35}.near-right{--defocus:4.7px;--flash:2.55}.edge-right{--defocus:5.5px;--flash:2.2;filter:none}
 .film-finish{position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:url('/textures/film-grain.svg');background-size:192px 192px;mix-blend-mode:soft-light;opacity:.34}
 @media(max-width:760px){.near-left{--defocus:2.4px;--flash:2}.near-right{--defocus:3.8px;--flash:2.45}.edge-right{--defocus:4px}.film-finish{opacity:.29}}
+
+.flower-sprite{position:relative}.flower-particle-origin{position:absolute;width:1px;height:1px;pointer-events:none}
