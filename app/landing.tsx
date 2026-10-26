@@ -66,7 +66,6 @@ export default function Landing() {
 
   return (
     <div className="landing-shell" id="top">
-      <img className="background-photo" src="/images/meadow.jpg" alt="" width="735" height="492" fetchPriority="high" />
       <LivingMeadow />
       <div className="photo-shade" aria-hidden="true" />
       <ParticleCursor />
