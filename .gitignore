@@ -40,3 +40,8 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+
+# Local design exports and generated build cache
+/output/
+/tsconfig.tsbuildinfo
+/cloudflare-env.d.ts

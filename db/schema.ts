@@ -1,4 +1,8 @@
-// Intentionally empty by default.
-// Add Drizzle tables here when the site actually needs a database.
-// See examples/d1/db/schema.ts for an opt-in example.
-export {};
+import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+export const subscribers = sqliteTable("subscribers", {
+  email: text("email").primaryKey(),
+  createdAt: text("created_at").notNull(),
+  consentVersion: text("consent_version").notNull(),
+  tokenHash: text("token_hash").notNull().unique(),
+});
