@@ -3,9 +3,9 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "formagain — A new form of feeling.",
-  description: "A new beginning, naturally. Sign up for formagain news and collection updates.",
+  description: "A little care. A world of possibility. Plant a small beginning with formagain.",
   icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
-  openGraph: { title: "formagain — A new form of feeling.", description: "A new beginning, naturally. Join the formagain mailing list.", type: "website", locale: "en_US" },
+  openGraph: { title: "formagain — A new form of feeling.", description: "A little care. A world of possibility. Let’s make something beautiful, together.", type: "website", locale: "en_US" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 
 import ParticleCursor from "./particle-cursor";
 import LivingMeadow from "./living-meadow";
+import WarmJourney from "./warm-journey";
 
 type Dialog = "privacy" | null;
 type SubscriptionResponse = { subscribed?: boolean; error?: string; canUnsubscribe?: boolean };
@@ -70,15 +71,16 @@ export default function Landing() {
       <div className="photo-shade" aria-hidden="true" />
       <div className="film-finish" aria-hidden="true" />
       <ParticleCursor />
-      <a className="skip-link" href="#main">Skip to subscription</a>
+      <a className="skip-link" href="#main">Skip to experience</a>
       <header className="site-header"><a className="brand-home" href="#top" aria-label="formagain home"><img className="brand-logo" src="/brand/formagain.svg" alt="formagain" width="490" height="97" /></a><span className="launch-status"><i /> COMING SOON</span></header>
       <main id="main" className="main-content">
-        <h1 className="tagline">A new beginning, naturally.</h1>
+        <WarmJourney>
         <section className="newsletter" id="subscribe" aria-label="Email subscription">
-          {phase === "success" || (phase === "loading" && canUnsubscribe) ? <div className="subscription-success" role="status"><span aria-hidden="true">✓</span><p>You’re on the list. See you soon.</p></div> : <form noValidate onSubmit={subscribe} className="subscribe-form"><label className="sr-only" htmlFor="email">Your email address</label><div className="email-row"><input id="email" name="email" type="email" autoComplete="email" placeholder="Your email address" required maxLength={254} value={email} onChange={e => setEmail(e.target.value)} aria-describedby="subscribe-note subscribe-message" aria-invalid={phase === "error"} disabled={phase === "loading"} /><button type="submit" disabled={phase === "loading"}><span>{phase === "loading" ? "Joining…" : "Subscribe"}</span><Arrow /></button></div><div className="honeypot" aria-hidden="true"><label>Website<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label></div></form>}
+          {phase === "success" || (phase === "loading" && canUnsubscribe) ? <div className="subscription-success" role="status"><span aria-hidden="true">✓</span><p>You’re on the list. See you soon.</p></div> : <form noValidate onSubmit={subscribe} className="subscribe-form"><label className="sr-only" htmlFor="email">Your email address</label><div className="email-row"><input id="email" name="email" type="email" autoComplete="email" placeholder="Your email address" required maxLength={254} value={email} onChange={e => setEmail(e.target.value)} aria-describedby="subscribe-note subscribe-message" aria-invalid={phase === "error"} disabled={phase === "loading"} /><button type="submit" disabled={phase === "loading"}><span>{phase === "loading" ? "Joining…" : "Join us"}</span><Arrow /></button></div><div className="honeypot" aria-hidden="true"><label>Website<input type="text" name="website" tabIndex={-1} autoComplete="off" /></label></div></form>}
           <p id="subscribe-message" className={`form-message ${phase === "error" ? "error" : ""}`} role={phase === "error" ? "alert" : "status"}>{message}</p>
-          <p className="subscribe-note" id="subscribe-note">{canUnsubscribe ? <button disabled={phase === "loading"} onClick={unsubscribe}>{phase === "loading" ? "Working…" : "Unsubscribe"}</button> : "Brand letters. Unsubscribe anytime."}</p>
+          <p className="subscribe-note" id="subscribe-note">{canUnsubscribe ? <button disabled={phase === "loading"} onClick={unsubscribe}>{phase === "loading" ? "Working…" : "Unsubscribe"}</button> : "Only brand letters. Unsubscribe anytime."}</p>
         </section>
+        </WarmJourney>
       </main>
       <footer className="site-footer"><span>© 2026 FORMAGAIN</span><div className="footer-links"><button className="instagram-link" type="button" disabled title="Instagram link coming soon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5" stroke="currentColor" strokeWidth="1.4"/><circle cx="12" cy="12" r="3.6" stroke="currentColor" strokeWidth="1.4"/><circle cx="17" cy="7" r="1" fill="currentColor"/></svg><span>Instagram</span><Arrow diagonal /></button><button onClick={() => setDialog("privacy")}>Privacy</button></div></footer>
       <dialog ref={dialogRef} className="brand-dialog" onCancel={() => setDialog(null)} onClick={e => { if (e.target === dialogRef.current) setDialog(null); }}><button className="dialog-close" aria-label="Close dialog" onClick={() => setDialog(null)}>×</button><div className="privacy-dialog"><span className="eyebrow">YOUR EMAIL, RESPECTED.</span><h2>Privacy</h2><p>We store your email address, subscription date and consent record to share formagain news and collection updates. Your email is never displayed publicly.</p><p>An essential cookie identifies your subscription on this device. Select “Unsubscribe” here to delete your email record. This option may no longer recognize your subscription if you clear cookies or switch devices.</p><p>We are currently collecting sign-ups. Subscribing does not send an immediate email. Collection details will be announced at launch.</p><button className="dialog-confirm" onClick={() => setDialog(null)}>Got it <Arrow /></button></div></dialog>
