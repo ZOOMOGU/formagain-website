@@ -1,3 +1,50 @@
+# FORMAGAIN 品牌网站
+
+服装品牌网站源码，使用 React、TypeScript 和 Vinext。
+
+## 朋友接手编辑
+
+仓库是私有的，需要仓库所有者先在 GitHub 的 Settings → Collaborators 中邀请你的 GitHub 账号，接受邀请后才能下载和提交代码。
+
+1. 安装 Node.js 22.13.0 或更新版本。
+2. 克隆仓库并进入项目：
+
+```bash
+git clone https://github.com/ZOOMOGU/formagain-website.git
+cd formagain-website
+npm ci
+npm run dev
+```
+
+打开终端显示的本地网址预览。使用 Codex 或其他编辑器打开项目文件夹即可继续修改。
+
+- 页面与交互：`app/`
+- 全局样式：`app/globals.css`
+- 图片与品牌素材：`public/`
+- 数据库结构与迁移：`db/`、`drizzle/`
+
+## 协作与发布
+
+每次开始前先同步代码；推荐为每项修改新建分支，提交后通过 Pull Request 合并。
+
+```bash
+git pull
+git switch -c edit-homepage
+# 完成修改后检查构建
+npm run build
+git add .
+git commit -m "Update homepage"
+git push -u origin edit-homepage
+```
+
+GitHub 保存源码。推送代码不会自动更新原来的线上网站；线上发布仍需通过有权限的 Sites 账号完成。`.openai/hosting.json` 保留现有站点标识和 D1 绑定，勿随意替换。订阅功能依赖 D1 数据库，生产数据与发布权限不随源码共享。
+
+依赖、构建缓存、本地数据库和 `.env` 文件已通过 `.gitignore` 排除，请勿提交密钥。
+
+---
+
+## 原始模板说明
+
 # vinext-starter
 
 A clean full-stack starter running on
